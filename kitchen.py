@@ -3,5 +3,5 @@ class Quantity:
         self.amount = amount
 
     def times(self, multiplier):
-        # general multiplication implementation
-        self.amount = self.amount * multiplier
+        # return a new Quantity instead of mutating
+        return Quantity(self.amount * multiplier)
