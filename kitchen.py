@@ -15,8 +15,7 @@ class Quantity:
         return f"Quantity({self.amount}, {self.unit!r})"
 
     def plus(self, other):
-        # fake it for initial green: assume same unit and return concrete Quantity
-        return Quantity(self.amount + other.amount, self.unit)
+        return Sum(self, other)
 
 
 def grams(amount):
@@ -35,5 +34,17 @@ class Converter:
         self._rates.setdefault(from_unit, {})[to_unit] = rate
 
     def reduce(self, source, to_unit):
-        # fake: assume source already in desired unit or is a Quantity
+        # delegate to the source's reduce method if it has one
+        if hasattr(source, 'reduce'):
+            return source.reduce(self, to_unit)
         return source
+
+
+class Sum:
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def reduce(self, converter, to_unit):
+        # not implemented yet — this will make the tests go red until implemented
+        raise NotImplementedError
