@@ -6,6 +6,12 @@ class Quantity:
     def times(self, multiplier):
         return Quantity(self.amount * multiplier, self.unit)
 
+    def reduce(self, converter, to_unit):
+        if self.unit == to_unit:
+            return Quantity(self.amount, self.unit)
+        rate = converter.rate(self.unit, to_unit)
+        return Quantity(self.amount * rate, to_unit)
+
     def __eq__(self, other):
         if not isinstance(other, Quantity):
             return NotImplemented
@@ -33,6 +39,14 @@ class Converter:
     def add_rate(self, from_unit, to_unit, rate):
         self._rates.setdefault(from_unit, {})[to_unit] = rate
 
+    def rate(self, from_unit, to_unit):
+        if from_unit == to_unit:
+            return 1.0
+        try:
+            return self._rates[from_unit][to_unit]
+        except KeyError:
+            raise ValueError(f"No conversion rate from {from_unit} to {to_unit}")
+
     def reduce(self, source, to_unit):
         # delegate to the source's reduce method if it has one
         if hasattr(source, 'reduce'):
@@ -46,5 +60,6 @@ class Sum:
         self.right = right
 
     def reduce(self, converter, to_unit):
-        # not implemented yet — this will make the tests go red until implemented
-        raise NotImplementedError
+        left_red = converter.reduce(self.left, to_unit)
+        right_red = converter.reduce(self.right, to_unit)
+        return Quantity(left_red.amount + right_red.amount, to_unit)
