@@ -3,5 +3,5 @@ class Quantity:
         self.amount = amount
 
     def times(self, multiplier):
-        # fake it: always set to 600 for the first test
-        self.amount = 600
+        # general multiplication implementation
+        self.amount = self.amount * multiplier
